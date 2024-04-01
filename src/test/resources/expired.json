@@ -1,0 +1,9 @@
+{
+  "expires": "2020-04-01T19:41:46.831179Z",
+  "value": {
+    "aString": "SomeString",
+    "anInt": 1,
+    "aBool": true,
+    "anOption": "OptionalString"
+  }
+}
