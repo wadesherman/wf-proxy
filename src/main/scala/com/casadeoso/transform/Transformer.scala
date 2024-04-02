@@ -46,7 +46,7 @@ object Transformer {
         Right(
           LessBetterForecast(
             currentConditions = abbreviateCurrent(in.currentConditions),
-            forecast = today :: tomorrow :: tail,
+            forecast = Nil,
             today = today,
             tomorrow = tomorrow
           )
