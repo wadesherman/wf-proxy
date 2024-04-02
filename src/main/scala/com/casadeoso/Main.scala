@@ -100,7 +100,7 @@ object Main extends IOApp {
       case GET -> Root / "key" => {
         getApiKey
           .flatMap {
-            case Some(key) => Ok(key.asJson.noSpaces)
+            case Some(key) => Ok(key.asJson)
             case None      => NoContent()
           }
       }
@@ -150,12 +150,12 @@ object Main extends IOApp {
             }
 
           }
-          case Right(forecast) => Ok(forecast.asJson.noSpaces)
+          case Right(forecast) => Ok(forecast.asJson)
         }
       }
       case POST -> Root / "key" / newKey => {
         setApiKey(ApiKey(newKey)).flatMap {
-          case Some(r) => Ok(r.asJson.noSpaces)
+          case Some(r) => Ok(r.asJson)
           case None    => InternalServerError()
 
         }
