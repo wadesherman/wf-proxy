@@ -4,9 +4,9 @@ import io.circe.generic.extras.{Configuration, ConfiguredJsonCodec}
 
 @ConfiguredJsonCodec
 case class ForecastDaily(
-    airTempHigh: Int,
+    airTempHigh: Double,
     airTempHighColor: String,
-    airTempLow: Int,
+    airTempLow: Double,
     airTempLowColor: String,
     conditions: String,
     dayNum: Int,

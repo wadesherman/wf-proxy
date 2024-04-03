@@ -4,9 +4,9 @@ import io.circe.generic.extras.{Configuration, ConfiguredJsonCodec}
 
 @ConfiguredJsonCodec
 case class ForecastHourly(
-    airTemperature: Int,
+    airTemperature: Double,
     conditions: String,
-    feelsLike: Int,
+    feelsLike: Double,
     icon: String,
     localDay: Int,
     localHour: Int,
@@ -17,13 +17,13 @@ case class ForecastHourly(
     relativeHumidity: Int,
     seaLevelPressure: Double,
     time: Long,
-    uv: Int,
-    windAvg: Int,
+    uv: Double,
+    windAvg: Double,
     windAvgColor: String,
     windDirection: Int,
     windDirectionCardinal: String,
     windDirectionIcon: String,
-    windGust: Int,
+    windGust: Double,
     windGustColor: String
 )
 object ForecastHourly {
