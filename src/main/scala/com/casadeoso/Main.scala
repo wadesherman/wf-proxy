@@ -96,8 +96,8 @@ object Main extends IOApp with StrictLogging {
               logger.error(f"API Key Unauthorized")
               setApiKey(apiKey.copy(isActive = false)).map(_ => Left(ApiKeyError()))
             }
-            case _ => {
-              logger.error(f"Unknown Error")
+            case e => {
+              logger.error(f"Unhandled API error: ${e.status.code}")
               IO(Left(ApiError()))
             }
           }
