@@ -42,7 +42,7 @@ object Transformer {
 
   def abbreviate(in: BetterForecastv9): Either[AppErrors, LessBetterForecast] = {
     in.forecast.daily.map(abbreviateDaily) match {
-      case today :: tomorrow :: tail =>
+      case today :: tomorrow :: _ =>
         Right(
           LessBetterForecast(
             currentConditions = abbreviateCurrent(in.currentConditions),

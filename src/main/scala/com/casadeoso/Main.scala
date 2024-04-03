@@ -7,6 +7,7 @@ import com.casadeoso.request.BetterForecastv9
 import com.casadeoso.response.LessBetterForecast
 import com.casadeoso.transform.Transformer
 import com.comcast.ip4s._
+import com.typesafe.scalalogging.StrictLogging
 import org.http4s.circe._
 import org.http4s.client.Client
 import org.http4s.dsl.io._
@@ -20,7 +21,7 @@ import pureconfig.generic.auto._
 import java.io.File
 import scala.concurrent.duration.DurationInt
 
-object Main extends IOApp {
+object Main extends IOApp with StrictLogging {
 
   import io.circe.syntax._
 
@@ -54,6 +55,7 @@ object Main extends IOApp {
           if (k.isActive) {
             Some(k)
           } else {
+            logger.warn(f"API key expired.")
             None
           }
         )
@@ -73,7 +75,10 @@ object Main extends IOApp {
             case Status.Successful(r) =>
               r.attemptAs[BetterForecastv9]
                 .fold(
-                  _ => Left(JsonParsingError()),
+                  e => {
+                    logger.warn(f"Json Parsing Error: ${e.message}")
+                    Left(JsonParsingError())
+                  },
                   r => Right(r)
                 )
                 .flatMap {
@@ -81,13 +86,20 @@ object Main extends IOApp {
                   case Right(f) =>
                     Cache.put(f, forecastCache, 59.minutes).map {
                       case Some(f) => Right(f)
-                      case None    => Left(FileSystemError())
+                      case None    => {
+                        logger.warn(f"Error writing forecast to cache")
+                        Left(FileSystemError())
+                      }
                     }
                 }
             case Status.Unauthorized(_) => {
+              logger.error(f"API Key Unauthorized")
               setApiKey(apiKey.copy(isActive = false)).map(_ => Left(ApiKeyError()))
             }
-            case _ => IO(Left(ApiError()))
+            case _ => {
+              logger.error(f"Unknown Error")
+              IO(Left(ApiError()))
+            }
           }
         }
     }
