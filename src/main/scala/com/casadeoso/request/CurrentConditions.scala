@@ -5,12 +5,12 @@ import io.circe.generic.extras.{Configuration, ConfiguredJsonCodec}
 @ConfiguredJsonCodec
 case class CurrentConditions(
     airDensity: Double,
-    airTemperature: Int,
+    airTemperature: Double,
     brightness: Long,
     conditions: String,
-    deltaT: Int,
-    dewPoint: Int,
-    feelsLike: Int,
+    deltaT: Double,
+    dewPoint: Double,
+    feelsLike: Double,
     icon: String,
     includesStationData: Boolean,
     isPrecipLocalDayRainCheck: Boolean,
@@ -31,13 +31,13 @@ case class CurrentConditions(
     stationPressure: Double,
     time: Long,
     uv: Int,
-    wetBulbGlobeTemperature: Int,
-    wetBulbTemperature: Int,
-    windAvg: Int,
+    wetBulbGlobeTemperature: Double,
+    wetBulbTemperature: Double,
+    windAvg: Double,
     windDirection: Int,
     windDirectionCardinal: String,
     windDirectionIcon: String,
-    windGust: Int
+    windGust: Double
 )
 
 object CurrentConditions {

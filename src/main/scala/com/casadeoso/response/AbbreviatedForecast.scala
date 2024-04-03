@@ -4,8 +4,8 @@ import io.circe.generic.extras.{Configuration, ConfiguredJsonCodec}
 
 @ConfiguredJsonCodec
 case class AbbreviatedForecast(
-    airTempHigh: Int,
-    airTempLow: Int,
+    airTempHigh: Double,
+    airTempLow: Double,
     icon: String,
     precip: Double,
     precipIcon: String,

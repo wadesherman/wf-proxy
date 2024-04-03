@@ -4,18 +4,18 @@ import io.circe.generic.extras.{Configuration, ConfiguredJsonCodec}
 
 @ConfiguredJsonCodec
 case class AbbreviatedCurrent(
-    airTemperature: Int,
-    feelsLike: Int,
+    airTemperature: Double,
+    feelsLike: Double,
     icon: String,
     precipAccumLocalDay: Double,
     precipAccumLocalYesterday: Double,
     pressureTrend: String,
     relativeHumidity: Int,
-    windAvg: Int,
+    windAvg: Double,
     windDirection: Int,
     windDirectionCardinal: String,
     windDirectionIcon: String,
-    windGust: Int
+    windGust: Double
 )
 
 object AbbreviatedCurrent {
