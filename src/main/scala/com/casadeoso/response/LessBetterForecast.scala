@@ -7,7 +7,8 @@ case class LessBetterForecast(
     currentConditions: AbbreviatedCurrent,
     forecast: Seq[AbbreviatedForecast],
     today: AbbreviatedForecast,
-    tomorrow: AbbreviatedForecast
+    tomorrow: AbbreviatedForecast,
+    timestamp: Long
 )
 
 object LessBetterForecast {

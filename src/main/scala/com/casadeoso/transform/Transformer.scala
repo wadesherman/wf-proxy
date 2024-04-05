@@ -48,7 +48,8 @@ object Transformer {
             currentConditions = abbreviateCurrent(in.currentConditions),
             forecast = Nil,
             today = today,
-            tomorrow = tomorrow
+            tomorrow = tomorrow,
+            timestamp = in.currentConditions.time
           )
         )
       case _ => Left(JsonParsingError())

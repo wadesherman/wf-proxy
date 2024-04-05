@@ -86,7 +86,7 @@ object Main extends IOApp with StrictLogging {
                   case Right(f) =>
                     Cache.put(f, forecastCache, 59.minutes).map {
                       case Some(f) => Right(f)
-                      case None    => {
+                      case None => {
                         logger.warn(f"Error writing forecast to cache")
                         Left(FileSystemError())
                       }
@@ -103,7 +103,6 @@ object Main extends IOApp with StrictLogging {
           }
         }
     }
-
   }
 
   val endpoints = HttpRoutes
@@ -153,12 +152,12 @@ object Main extends IOApp with StrictLogging {
         io.flatMap {
           case Left(err) => {
             err match {
-              case CacheMiss()        => NoContent()
-              case FileSystemError()  => InternalServerError()
-              case JsonParsingError() => InternalServerError()
-              case NoApiKey()         => ProxyAuthenticationRequired()
-              case ApiKeyError()      => Forbidden()
-              case ApiError()         => ServiceUnavailable()
+              case CacheMiss()        => NoContent()                   // 204
+              case FileSystemError()  => InternalServerError()         // 500
+              case JsonParsingError() => InternalServerError()         // 500
+              case NoApiKey()         => ProxyAuthenticationRequired() // 407
+              case ApiKeyError()      => Forbidden()                   // 403
+              case ApiError()         => ServiceUnavailable()          // 503
             }
 
           }
@@ -173,7 +172,7 @@ object Main extends IOApp with StrictLogging {
         }
       }
     }
-    .orNotFound
+    .orNotFound // 404
 
   def run(args: List[String]): IO[ExitCode] =
     EmberServerBuilder
