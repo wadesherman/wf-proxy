@@ -37,3 +37,5 @@ build/
 
 ### Mac OS ###
 .DS_Store
+/src/test/resources/foo
+/src/test/scala/com/casadeoso/FooSpec.scala

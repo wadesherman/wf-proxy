@@ -18,7 +18,7 @@ case class ForecastDaily(
     precipProbability: Int,
     precipType: Option[String],
     relativeHumidity: Int,
-    relativeSunshineDuration: Int,
+    relativeSunshineDuration: Option[Int],
     sunrise: Long,
     sunset: Long,
     windAvg: Double
