@@ -84,7 +84,7 @@ object Main extends IOApp with StrictLogging {
                 .flatMap {
                   case Left(value) => IO(Left(value))
                   case Right(f) =>
-                    Cache.put(f, forecastCache, 29.minutes).map {
+                    Cache.put(f, forecastCache, appConfig.getForecastRefreshDuration).map {
                       case Some(f) => Right(f)
                       case None => {
                         logger.warn(f"Error writing forecast to cache")
