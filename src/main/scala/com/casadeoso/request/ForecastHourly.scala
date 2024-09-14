@@ -17,7 +17,7 @@ case class ForecastHourly(
     relativeHumidity: Int,
     seaLevelPressure: Double,
     time: Long,
-    uv: Double,
+    uv: Option[Double],
     windAvg: Double,
     windAvgColor: String,
     windDirection: Int,
