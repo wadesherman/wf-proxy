@@ -128,7 +128,7 @@ object Main extends IOApp with StrictLogging {
           }
       }
       case GET -> Root / "forecast" => {
-        val apiKey                                       = getApiKey
+        val apiKey: IO[Option[ApiKey]] = getApiKey
         val cachedResponse: IO[Option[BetterForecastv9]] = cachedForecast
         val apiResponse: IO[Either[AppErrors, BetterForecastv9]] = for {
           key <- apiKey

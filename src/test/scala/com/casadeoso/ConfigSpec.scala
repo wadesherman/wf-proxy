@@ -14,7 +14,8 @@ class ConfigSpec extends AnyFlatSpec with EitherValues {
       "/tmp/weatherflow-proxy/",
       123456,
       "https://swd.weatherflow.com/swd/rest/better_forecast?station_id=123456&units_temp=f&units_wind=mph&units_pressure=inhg&units_precip=in&units_distance=mi&api_key=",
-      "https://swd.weatherflow.com/swd/rest/observations/stn/123456?units_temp=f&units_wind=mph&units_pressure=inhg&units_precip=in&units_distance=mi&api_key="
+      "https://swd.weatherflow.com/swd/rest/observations/stn/123456?units_temp=f&units_wind=mph&units_pressure=inhg&units_precip=in&units_distance=mi&api_key=",
+      29
     )
   }
 }
