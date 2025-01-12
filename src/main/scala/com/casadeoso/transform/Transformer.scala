@@ -28,9 +28,8 @@ object Transformer {
       airTemperature = c.airTemperature,
       feelsLike = c.feelsLike,
       icon = ccIconToIcon(c.icon),
-      precipAccumLocalDay = c.precipAccumLocalDay,
-      precipAccumLocalYesterday = c.precipAccumLocalYesterday,
-      pressureTrend = c.pressureTrend,
+      precipAccumLocalDay = c.precipAccumLocalDay.getOrElse(0),
+      precipAccumLocalYesterday = c.precipAccumLocalYesterday.getOrElse(0),
       relativeHumidity = c.relativeHumidity,
       windAvg = c.windAvg,
       windDirection = c.windDirection,
@@ -49,7 +48,7 @@ object Transformer {
             forecast = Nil,
             today = today,
             tomorrow = tomorrow,
-            timestamp = in.currentConditions.time
+            timestamp = in.forecast.hourly.headOption.map(_.time).getOrElse(0)
           )
         )
       case _ => Left(JsonParsingError())

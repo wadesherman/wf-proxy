@@ -4,10 +4,10 @@ import io.circe.generic.extras.{Configuration, ConfiguredJsonCodec}
 
 @ConfiguredJsonCodec
 case class Station(
-    agl: Double,
-    elevation: Double,
+    agl: Option[Double],
+    elevation: Option[Double],
     includesTempest: Option[Boolean],
-    isStationOnline: Boolean,
+    isStationOnline: Option[Boolean],
     // networkData: List[???]
     state: Int,
     stationId: Int

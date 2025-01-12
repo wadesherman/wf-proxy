@@ -9,7 +9,6 @@ case class AbbreviatedCurrent(
     icon: String,
     precipAccumLocalDay: Double,
     precipAccumLocalYesterday: Double,
-    pressureTrend: String,
     relativeHumidity: Int,
     windAvg: Double,
     windDirection: Int,
