@@ -15,7 +15,7 @@ COPY src src
 RUN sbt compile
 RUN sbt pack
 
-FROM openjdk:17-slim
+FROM openjdk:17-ea-17-slim
 WORKDIR /app
 COPY --from=builder /build/target/pack/ .
 RUN mkdir -p /tmp/weatherflow-proxy
