@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM openjdk:17-bullseye as builder
+FROM --platform=$BUILDPLATFORM openjdk:18-ea-17-bullseye as builder
 SHELL ["/bin/bash", "-c"]
 WORKDIR /build
 RUN apt update && apt install zip
