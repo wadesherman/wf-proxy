@@ -6,4 +6,5 @@ case class CacheMiss()        extends AppErrors
 case class JsonParsingError() extends AppErrors
 case class NoApiKey()         extends AppErrors
 case class ApiKeyError()      extends AppErrors
+case class NoToken()          extends AppErrors
 case class ApiError()         extends AppErrors

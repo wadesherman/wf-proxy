@@ -9,7 +9,7 @@ case class Config(
     observationEndpoint: String,
     forecastRefreshMin: Int
 ) {
-  val getForecastEndpoint: String => String    = k => forecastEndpoint + k
-  val getObservationEndpoint: String => String = k => observationEndpoint + k
+  val getForecastEndpoint: (String, String) => String    = (k, t) => forecastEndpoint + k + "&token=" + t
+  val getObservationEndpoint: (String, String) => String = (k, t) => observationEndpoint + k + "&token=" + t
   val getForecastRefreshDuration: FiniteDuration = forecastRefreshMin.minutes
 }

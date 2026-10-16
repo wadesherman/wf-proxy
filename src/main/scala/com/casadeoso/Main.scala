@@ -5,6 +5,7 @@ import com.casadeoso.apikey.ApiKey
 import com.casadeoso.cache.Cache
 import com.casadeoso.request.BetterForecastv9
 import com.casadeoso.response.LessBetterForecast
+import com.casadeoso.token.Token
 import com.casadeoso.transform.Transformer
 import com.comcast.ip4s._
 import com.typesafe.scalalogging.StrictLogging
@@ -36,6 +37,9 @@ object Main extends IOApp with StrictLogging {
   val keyCache = new File(
     appConfig.configDir + "/key.json"
   )
+  val tokenCache = new File(
+    appConfig.configDir + "/token.json"
+  )
 
   val client: Resource[IO, Client[IO]] = EmberClientBuilder
     .default[IO]
@@ -46,6 +50,9 @@ object Main extends IOApp with StrictLogging {
 
   implicit val keyDecoder: EntityDecoder[IO, ApiKey] =
     jsonOf[IO, ApiKey]
+
+  implicit val tokenDecoder: EntityDecoder[IO, Token] =
+    jsonOf[IO, Token]
 
   def getApiKey: IO[Option[ApiKey]] =
     Cache
@@ -63,15 +70,32 @@ object Main extends IOApp with StrictLogging {
 
   def setApiKey(k: ApiKey): IO[Option[ApiKey]] = Cache.put(k, keyCache, 9999.days)
 
+  def getToken: IO[Option[Token]] =
+    Cache
+      .get[Token](tokenCache)
+      .map(
+        _.flatMap(t =>
+          if (t.isActive) {
+            Some(t)
+          } else {
+            logger.warn(f"Token expired.")
+            None
+          }
+        )
+      )
+
+  def setToken(t: Token): IO[Option[Token]] = Cache.put(t, tokenCache, 9999.days)
+
   def cachedForecast: IO[Option[BetterForecastv9]] =
     Cache.get[BetterForecastv9](forecastCache)
 
-  def apiValue(maybeKey: Option[ApiKey]): IO[Either[AppErrors, BetterForecastv9]] = {
-    maybeKey match {
-      case None => IO(Left(NoApiKey()))
-      case Some(apiKey) =>
+  def apiValue(maybeKey: Option[ApiKey], maybeToken: Option[Token]): IO[Either[AppErrors, BetterForecastv9]] = {
+    (maybeKey, maybeToken) match {
+      case (None, _) => IO(Left(NoApiKey()))
+      case (_, None) => IO(Left(NoToken()))
+      case (Some(apiKey), Some(token)) =>
         client.use { c =>
-          c.get[Either[AppErrors, BetterForecastv9]](appConfig.getForecastEndpoint(apiKey.key)) {
+          c.get[Either[AppErrors, BetterForecastv9]](appConfig.getForecastEndpoint(apiKey.key, token.token)) {
             case Status.Successful(r) =>
               r.attemptAs[BetterForecastv9]
                 .fold(
@@ -93,8 +117,9 @@ object Main extends IOApp with StrictLogging {
                     }
                 }
             case Status.Unauthorized(_) => {
-              logger.error(f"API Key Unauthorized")
-              setApiKey(apiKey.copy(isActive = false)).map(_ => Left(ApiKeyError()))
+              logger.error(f"API Key or Token Unauthorized")
+              (setApiKey(apiKey.copy(isActive = false)) *> setToken(token.copy(isActive = false)))
+                .map(_ => Left(ApiKeyError()))
             }
             case e => {
               logger.error(f"Unhandled API error: ${e.status.code}")
@@ -115,24 +140,36 @@ object Main extends IOApp with StrictLogging {
             case None      => NoContent()
           }
       }
-      case GET -> Root / "url" / endpoint => {
-        getApiKey
+      case GET -> Root / "token" => {
+        getToken
           .flatMap {
-            case Some(key) =>
+            case Some(token) => Ok(token.asJson)
+            case None        => NoContent()
+          }
+      }
+      case GET -> Root / "url" / endpoint => {
+        (for {
+          k <- getApiKey
+          t <- getToken
+        } yield (k, t))
+          .flatMap {
+            case (Some(key), Some(token)) =>
               endpoint match {
-                case "forecast"    => Ok(appConfig.getForecastEndpoint(key.key))
-                case "observation" => Ok(appConfig.getObservationEndpoint(key.key))
+                case "forecast"    => Ok(appConfig.getForecastEndpoint(key.key, token.token))
+                case "observation" => Ok(appConfig.getObservationEndpoint(key.key, token.token))
                 case _             => NoContent()
               }
-            case None => NoContent()
+            case _ => NoContent()
           }
       }
       case GET -> Root / "forecast" => {
         val apiKey: IO[Option[ApiKey]] = getApiKey
+        val token: IO[Option[Token]] = getToken
         val cachedResponse: IO[Option[BetterForecastv9]] = cachedForecast
         val apiResponse: IO[Either[AppErrors, BetterForecastv9]] = for {
           key <- apiKey
-          r   <- apiValue(key)
+          t   <- token
+          r   <- apiValue(key, t)
         } yield r
 
         val io: IO[Either[AppErrors, LessBetterForecast]] = cachedResponse
@@ -156,6 +193,7 @@ object Main extends IOApp with StrictLogging {
               case FileSystemError()  => InternalServerError()         // 500
               case JsonParsingError() => InternalServerError()         // 500
               case NoApiKey()         => ProxyAuthenticationRequired() // 407
+              case NoToken()          => ProxyAuthenticationRequired() // 407
               case ApiKeyError()      => Forbidden()                   // 403
               case ApiError()         => ServiceUnavailable()          // 503
             }
@@ -169,6 +207,12 @@ object Main extends IOApp with StrictLogging {
           case Some(r) => Ok(r.asJson)
           case None    => InternalServerError()
 
+        }
+      }
+      case POST -> Root / "token" / newToken => {
+        setToken(Token(newToken)).flatMap {
+          case Some(r) => Ok(r.asJson)
+          case None    => InternalServerError()
         }
       }
     }
