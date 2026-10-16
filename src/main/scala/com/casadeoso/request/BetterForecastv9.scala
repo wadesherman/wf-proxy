@@ -4,6 +4,7 @@ import io.circe.generic.extras.{Configuration, ConfiguredJsonCodec}
 
 @ConfiguredJsonCodec
 case class BetterForecastv9(
+//    alerts: Alert,
     buildCode: String,
     client: Client,
     currentConditions: CurrentConditions,
